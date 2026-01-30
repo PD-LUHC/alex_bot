@@ -2,10 +2,28 @@
 % Please edit documentation in R/alex_bot-package.R
 \docType{package}
 \name{AlexBot}
+\alias{AlexBot-package}
 \alias{AlexBot}
 \title{AlexBot: ONS Boundary Guessing Game Tools}
 \description{
 Functions for downloading ONS boundaries, selecting targets, plotting silhouettes
 and surroundings, and generating nearby multiple-choice options for a geography
 guessing game in the R terminal.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://pd-luhc.github.io/alex_bot}
+  \item Report bugs at \url{https://github.com/pd-luhc/alex_bot/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: M365 Copilot \email{noreply@microsoft.com}
+
+Authors:
+\itemize{
+  \item Pratik Desai
+}
+
 }
