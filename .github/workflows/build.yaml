@@ -1,0 +1,122 @@
+name: build.yaml
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - "R/**"
+      - "DESCRIPTION"
+    # Optional: avoid loops if docs change retriggers the workflow
+    paths-ignore:
+      - "man/**"
+      - "NAMESPACE"
+
+# Default read; overridden at job for contents: write
+permissions: read-all
+
+jobs:
+  build-alex-bot-package:
+    # Optional: avoid loops from bot commits
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    env:
+      # For devtools/remotes auth
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write  # needed for commits/tags/releases
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Extract version from DESCRIPTION
+        id: get_version
+        shell: bash
+        run: |
+          VERSION=$(grep '^Version:' DESCRIPTION | awk '{print $2}')
+          if [ -z "$VERSION" ]; then
+            echo "Could not parse Version from DESCRIPTION"; exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Detected VERSION=$VERSION"
+
+      - name: Check version increment
+        id: check_version
+        shell: bash
+        run: |
+          # Ensure tags are present
+          git fetch --tags --force
+
+          LATEST_TAG=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo "none")
+          echo "Latest tag: $LATEST_TAG"
+
+          if [ "$LATEST_TAG" = "none" ]; then
+            echo "No previous tags found. Proceeding with the release."
+            exit 0
+          fi
+
+          if [ "v$VERSION" = "$LATEST_TAG" ]; then
+            echo "Version has not been incremented. Current version: $LATEST_TAG"
+            exit 1
+          fi
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: any::roxygen2, any::devtools
+          needs: roxygen2, devtools
+
+      - name: Document
+        run: Rscript -e 'roxygen2::roxygenise()'
+
+      - name: Build package
+        run: Rscript -e 'devtools::build(path = paste0("AlexBot_", Sys.getenv("VERSION"), ".tar.gz"))'
+
+      # Commit and push BEFORE tagging/releasing so the tag points to this commit
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          git config --local user.name "${GITHUB_ACTOR}-action"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add man/* NAMESPACE DESCRIPTION || true
+          git commit -m "Build Release docs v$VERSION" || echo "No changes to commit"
+          git pull --ff-only
+          git push origin
+
+      # Create/push tag explicitly (ensures release aligns with this commit)
+      - name: Create and push tag
+        shell: bash
+        run: |
+          git tag "v$VERSION" 2>/dev/null || echo "Tag v$VERSION already exists locally"
+          git push origin "v$VERSION" 2>/dev/null || echo "Tag v$VERSION already exists remotely"
+
+      # Create release and upload asset in one step
+      - name: Create GitHub Release and upload asset
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          draft: true
+          prerelease: false
+          body: |
+            # Changes
+            ${{ github.event.head_commit.message }}
+            - add some contextualising notes
+            ---
+            ## Installation Instructions 
+              ```R
+              remotes::install_github("pd-luhc/alex_bot")
+              ```
+          files: |
+            AlexBot_${{ env.VERSION }}.tar.gz

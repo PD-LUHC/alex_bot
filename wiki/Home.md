@@ -1,6 +1,6 @@
-# alex_bot
+# AlexBot
 
-Welcome to **alex_bot** — an R package for a Local Authority (LA) geography guessing game using ONS boundaries.
+Welcome to **AlexBot** — an R package for a Local Authority (LA) geography guessing game using ONS boundaries.
 
 **Quick start:**
 

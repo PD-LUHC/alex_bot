@@ -3,12 +3,14 @@
 ONS Boundary Guessing Game tools for R.
 Totally vibe coded (not tested) in the length of time it takes to make and drink a cuppa.
 
+
 ## Install from GitHub
 
-    ```r
-    remotes::install_github("pd-luhc/alex_bot")
-    ```
+```r
+remotes::install_github("pd-luhc/alex_bot")
+```
 You might need to `install.packages("remotes")` if "remotes" is not installed
+
 ## Quick start
 
 ### Fast game:
