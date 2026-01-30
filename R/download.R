@@ -24,9 +24,9 @@ ons_get_boundaries <- function(area_type = c("lad", "ctyua", "msoa"),
         "&f=geojson"
     )
 
+    message("Fetching ONS boundaries, may take a moment")
     if (!quiet) {
-        message("Fetching ONS boundaries from:
-", full_url)
+        message(full_url)
     }
 
     sf_obj <- tryCatch(
