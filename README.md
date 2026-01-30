@@ -1,28 +1,24 @@
-# alex_bot
+# AlexBot
 
 ONS Boundary Guessing Game tools for R.
 Totally vibe coded (not tested) in the length of time it takes to make and drink a cuppa.
 
-## Install from local source
+## Install from GitHub
 
-1. Download the ZIP (`alex_bot.zip`) and unzip it.
-2. In R:
-   ```r
-   # install.packages("remotes")
-   remotes::install_local("alex_bot")
-   # or devtools::install_local("alex_bot")
-   ```
-
+    ```r
+    remotes::install_github("pd-luhc/alex_bot")
+    ```
+You might need to `install.packages("remotes")` if "remotes" is not installed
 ## Quick start
 
 ### Fast game:
 ```r
-alex_bot::LA_game()
+AlexBot::LA_game()
 ```
 
 ### More manual game:
 ```r
-library(alex_bot)
+library(AlexBot)
 
 # Download England LADs (low-res)
 lad <- ons_get_boundaries(

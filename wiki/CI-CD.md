@@ -17,16 +17,16 @@ The pkgdown workflow uploads `docs/` as a Pages artifact and deploys it. The sit
 
 1. Bump version in `DESCRIPTION`.
 2. Create a tag like `v0.2.0` and push.
-3. The **release** action builds `alex_bot_0.2.0.tar.gz` and attaches it to the GitHub Release.
+3. The **release** action builds `AlexBot_0.2.0.tar.gz` and attaches it to the GitHub Release.
 
 Users can install from GitHub directly:
 
 ```r
-remotes::install_github("OWNER/alex_bot")
+remotes::install_github("OWNER/AlexBot")
 ```
 
 Or download the tarball from the Release and install offline:
 
 ```r
-install.packages("alex_bot_0.2.0.tar.gz", repos = NULL, type = "source")
+install.packages("AlexBot_0.2.0.tar.gz", repos = NULL, type = "source")
 ```

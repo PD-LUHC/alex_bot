@@ -4,14 +4,13 @@
 
 ```r
 # install.packages("remotes")
-remotes::install_github("OWNER/alex_bot")
-library(alex_bot)
+remotes::install_github("pd-luhc/alex_bot")
 ```
 
 ## Play a round
 
 ```r
-LA_game()  # uses defaults: England LADs, BGC resolution, hints at 15/30/60 km
+AlexBot::LA_game()  # uses defaults: England LADs, BGC resolution, hints at 15/30/60 km
 ```
 
 **Commands** during a round: type your guess, or `hint`, `options`, `reveal`, `quit`.

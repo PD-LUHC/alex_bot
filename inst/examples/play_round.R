@@ -1,5 +1,5 @@
 # Example script to play one round from the installed package
-library(alex_bot)
+library(AlexBot)
 
 set.seed(2026)
 lad <- ons_get_boundaries(

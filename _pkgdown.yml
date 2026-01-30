@@ -2,7 +2,7 @@ url: https://pd-luhc.github.io/alex_bot
 template:
   bootstrap: 5
 home:
-  title: alex_bot — ONS Boundary Guessing Game
+  title: AlexBot — ONS Boundary Guessing Game
   description: Terminal game helpers for ONS Local Authorities and more.
 navbar:
   structure:

@@ -6,10 +6,10 @@ Welcome to **alex_bot** — an R package for a Local Authority (LA) geography gu
 
 ```r
 # install.packages("remotes")
-remotes::install_github("OWNER/alex_bot")
+remotes::install_github("pd-luhc/alex_bot")
 
 # One-command round with defaults
-alex_bot::LA_game()
+AlexBot::LA_game()
 ```
 
 See **Getting Started** for more.
