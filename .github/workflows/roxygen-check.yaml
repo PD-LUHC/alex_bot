@@ -1,0 +1,25 @@
+name: roxygen-check
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  roxygen-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: Install devtools and roxygen2
+        run: |
+          Rscript -e 'install.packages(c("devtools","roxygen2"), repos="https://cloud.r-project.org")'
+      - name: Run devtools::document()
+        run: |
+          Rscript -e 'devtools::document(quiet = TRUE)'
+      - name: Fail if docs changed
+        run: |
+          git status --porcelain
+          git diff --name-only --exit-code || (echo 'Roxygen docs are not up-to-date. Run devtools::document() locally and commit man/ + NAMESPACE.' && exit 1)

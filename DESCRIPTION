@@ -1,0 +1,22 @@
+Package: alex_bot
+Type: Package
+Title: ONS Boundary Guessing Game Tools
+Version: 0.2.0
+Authors@R: c(person(given = "Pratik", family = "Desai", role = c("aut")),
+             person(given = "M365 Copilot", role = c("cre"), email = "noreply@microsoft.com"))
+Description: Helpers to download ONS boundary data (Local Authorities and more),
+    pick specific or random entries, plot silhouettes and surroundings for
+    a geography guessing game, and generate nearby multiple-choice options.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: R (>= 4.1.0)
+Imports:
+    sf (>= 1.0-0),
+    ggplot2 (>= 3.4.0)
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://example.com/alex_bot
+BugReports: https://example.com/alex_bot/issues

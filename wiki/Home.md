@@ -1,0 +1,15 @@
+# alex_bot
+
+Welcome to **alex_bot** — an R package for a Local Authority (LA) geography guessing game using ONS boundaries.
+
+**Quick start:**
+
+```r
+# install.packages("remotes")
+remotes::install_github("OWNER/alex_bot")
+
+# One-command round with defaults
+alex_bot::LA_game()
+```
+
+See **Getting Started** for more.
