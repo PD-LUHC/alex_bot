@@ -75,3 +75,37 @@ Please install them using install.packages()."
     }
     hit
 }
+
+# Ensure a plotting device exists and is active
+.ensure_plot_device <- function() {
+    # If no device is open, open one; otherwise ensure the current device is active
+    if (is.null(grDevices::dev.list())) {
+        grDevices::dev.new()
+    } else {
+        try(grDevices::dev.set(which = grDevices::dev.cur()), silent = TRUE)
+    }
+}
+
+# Measure an LA's characteristic size in km (in BNG meters internally)
+# basis = "maxdim": max(width, height) of bbox
+# basis = "diag":   diagonal length of bbox
+# basis = "area_radius": diameter of a circle with same area (2 * sqrt(area/pi))
+.la_size_unit_km <- function(selection, basis = c("maxdim", "diag", "area_radius")) {
+    basis <- match.arg(basis)
+    sel_bng <- .to_bng(selection$selected)
+
+    bb <- sf::st_bbox(sel_bng)
+    w <- as.numeric(bb["xmax"] - bb["xmin"])  # meters
+    h <- as.numeric(bb["ymax"] - bb["ymin"])  # meters
+
+    if (basis == "maxdim") {
+        unit_m <- max(w, h)
+    } else if (basis == "diag") {
+        unit_m <- sqrt(w * w + h * h)
+    } else {
+        a <- as.numeric(sf::st_area(sel_bng))  # m^2
+        unit_m <- 2 * sqrt(a / pi)             # diameter-equivalent
+    }
+
+    unit_m / 1000  # return km
+}
