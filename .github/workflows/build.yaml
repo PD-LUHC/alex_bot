@@ -7,6 +7,8 @@ on:
       - "R/**"
       - "DESCRIPTION"
 
+  workflow_dispatch:
+
 # Default read; overridden at job for contents: write
 permissions: read-all
 
