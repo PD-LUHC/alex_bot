@@ -44,15 +44,12 @@ jobs:
         run: |
           # Ensure tags are present
           git fetch --tags --force
-
           LATEST_TAG=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo "none")
           echo "Latest tag: $LATEST_TAG"
-
           if [ "$LATEST_TAG" = "none" ]; then
             echo "No previous tags found. Proceeding with the release."
             exit 0
           fi
-
           if [ "v$VERSION" = "$LATEST_TAG" ]; then
             echo "Version has not been incremented. Current version: $LATEST_TAG"
             exit 1
@@ -110,15 +107,15 @@ jobs:
             ${{ github.event.head_commit.message }}
             - add some contextualising notes
             ---
-            ## Installation Instructions 
+            ## Installation Instructions
               ```R
               remotes::install_github("pd-luhc/alex_bot")
               ```
           files: |
             AlexBot_${{ env.VERSION }}.tar.gz
-      
-      # Build pkgdown site
-      - name: Run pkgdown workflow
-        uses: ./.github/workflows/pkgdown.yaml
-        with:
-          version: ${{ env.VERSION }}
+
+  # pkgdown runs only if the build job succeeds
+  pkgdown:
+    needs: build-alex-bot-package
+    if: ${{ needs.build-alex-bot-package.result == 'success' }}
+    uses: ./.github/workflows/pkgdown.yaml
