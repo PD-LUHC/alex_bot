@@ -8,8 +8,12 @@ LA_game(
   area_type = "lad",
   resolution = "BGC",
   nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
-  random_seed = 99,
+  random_seed = NULL,
+  hint_mode = c("proportional", "fixed_km"),
   buffers_km = c(15, 30, 60),
+  buffer_scales = c(1, 2.5, 5),
+  buffer_basis = c("maxdim", "diag", "area_radius"),
+  min_buffer_km = 5,
   n_options = 4,
   options_radius_km = 60
 )
