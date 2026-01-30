@@ -2,7 +2,7 @@ name: build.yaml
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - "R/**"
       - "DESCRIPTION"
