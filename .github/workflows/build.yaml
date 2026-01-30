@@ -116,3 +116,9 @@ jobs:
               ```
           files: |
             AlexBot_${{ env.VERSION }}.tar.gz
+      
+      # Build pkgdown site
+      - name: Run pkgdown workflow
+        uses: ./.github/workflows/pkgdown.yaml
+        with:
+          version: ${{ env.VERSION }}
