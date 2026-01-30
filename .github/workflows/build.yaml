@@ -119,3 +119,7 @@ jobs:
     needs: build-alex-bot-package
     if: ${{ needs.build-alex-bot-package.result == 'success' }}
     uses: ./.github/workflows/pkgdown.yaml
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
