@@ -3,12 +3,6 @@ name: Run pkgdown (manual)
 on:
   workflow_dispatch: {}  # enables manual trigger via Actions UI or API
 
-permissions:
-  # Keep default minimal permissions; elevate only for the job that deploys
-  contents: read
-  pages: read
-  id-token: read
-
 jobs:
   pkgdown:
     # Call the reusable workflow directly
