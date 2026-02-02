@@ -26,6 +26,12 @@ Please install them using install.packages()."
         code_col <- "CTYUA24CD"
         name_col <- "CTYUA24NM"
         nations_prefix <- c("E","N","S","W")
+    } else if (area_type == "pcon") {
+        # Westminster Parliamentary Constituencies (July 2024), UK
+        service <- paste0("Westminster_Parliamentary_Constituencies_July_2024_Boundaries_UK_", resolution)
+        code_col <- "PCON24CD"
+        name_col <- "PCON24NM"
+        nations_prefix <- c("E","N","S","W")  # UK-wide
     } else {
         res <- if (resolution == "BUC") "BSC_V3" else paste0(resolution, "_V3")
         service <- paste0("Middle_layer_Super_Output_Areas_December_2021_Boundaries_EW_", res)
