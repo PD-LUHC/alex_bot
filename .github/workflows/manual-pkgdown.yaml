@@ -1,0 +1,20 @@
+name: Run pkgdown (manual)
+
+on:
+  workflow_dispatch: {}  # enables manual trigger via Actions UI or API
+
+permissions:
+  # Keep default minimal permissions; elevate only for the job that deploys
+  contents: read
+  pages: read
+  id-token: read
+
+jobs:
+  pkgdown:
+    # Call the reusable workflow directly
+    uses: ./.github/workflows/pkgdown.yaml
+    # Grant the permissions it needs for Pages deployment
+    permissions:
+      contents: write   # read repo + write artifacts if needed
+      pages: write      # publish to GitHub Pages
+      id-token: write   # OIDC token required by actions/deploy-pages
