@@ -115,3 +115,74 @@ Please install them using install.packages()."
 
     unit_m / 1000  # return km
 }
+
+# ---- Cache helpers --------------------------------------------------------
+# Default cache directory (OS-specific, user-writable)
+# On R >= 4.0, tools::R_user_dir() gives a nice per-package cache location.
+.cache_dir <- function() {
+    dir <- tryCatch(
+        tools::R_user_dir("AlexBot", which = "cache"),
+        error = function(e) file.path(tempdir(), "AlexBot-cache")  # fallback
+    )
+    if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+    dir
+}
+
+# Construct a stable cache key for a boundaries request
+# Include service URL (from .ons_catalogue), resolution, area_type, nations filter.
+.cache_key <- function(catl, nations) {
+    # Only keep the nation flags that are valid for this layer
+    valid_n <- names(nations) %in% catl$nations_prefix
+    nations_eff <- nations[valid_n]
+    paste0(
+        "area=", sub(".*/services/", "", catl$url),    # unique-ish layer identifier
+        "|nations=", paste(names(nations_eff)[nations_eff], collapse = "-")
+    )
+}
+
+.cache_path <- function(key) {
+    # Sanitize for filesystem and add an extension that signals RDS
+    file.path(.cache_dir(), paste0(gsub("[^A-Za-z0-9._-]", "_", key), ".rds"))
+}
+
+# Save / load cached sf object + metadata
+.cache_save <- function(key, sf_obj) {
+    path <- .cache_path(key)
+    info <- list(
+        saved_at = Sys.time(),
+        sf_obj = sf_obj
+    )
+    saveRDS(info, file = path)
+    invisible(path)
+}
+
+.cache_load <- function(key, max_age_days = Inf) {
+    path <- .cache_path(key)
+    if (!file.exists(path)) return(NULL)
+    info <- tryCatch(readRDS(path), error = function(e) NULL)
+    if (is.null(info) || is.null(info$saved_at) || is.null(info$sf_obj)) return(NULL)
+    if (is.finite(max_age_days)) {
+        age <- as.numeric(difftime(Sys.time(), info$saved_at, units = "days"))
+        if (age > max_age_days) return(NULL)
+    }
+    info$sf_obj
+}
+
+# Public utilities (optional): clear & inspect cache
+clear_alexbot_cache <- function() {
+    dir <- .cache_dir()
+    files <- list.files(dir, full.names = TRUE)
+    if (length(files)) file.remove(files)
+    invisible(files)
+}
+
+alexbot_cache_info <- function() {
+    dir <- .cache_dir()
+    files <- list.files(dir, full.names = TRUE)
+    data.frame(
+        file = basename(files),
+        size_mb = round(file.info(files)$size / 1024^2, 2),
+        modified = file.info(files)$mtime,
+        stringsAsFactors = FALSE
+    )
+}
