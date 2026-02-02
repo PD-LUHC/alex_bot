@@ -23,7 +23,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Pratik Desai
+  \item pd-luhc (https://github.com/pd-luhc)
 }
 
 }

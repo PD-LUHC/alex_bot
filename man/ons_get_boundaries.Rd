@@ -2,27 +2,33 @@
 % Please edit documentation in R/download.R
 \name{ons_get_boundaries}
 \alias{ons_get_boundaries}
-\title{Download ONS boundaries}
+\title{Download ONS boundaries (with caching)}
 \usage{
 ons_get_boundaries(
-  area_type = c("lad", "ctyua", "msoa"),
+  area_type = c("lad", "ctyua", "msoa", "pcon"),
   resolution = c("BUC", "BSC", "BGC"),
   nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
-  quiet = TRUE
+  quiet = TRUE,
+  use_cache = TRUE,
+  cache_max_age_days = 30
 )
 }
 \arguments{
-\item{area_type}{One of 'lad', 'ctyua', 'msoa'. Defaults to 'lad' if not provided.}
+\item{area_type}{'lad','ctyua','msoa','pcon'}
 
-\item{resolution}{One of 'BUC', 'BSC', 'BGC'.}
+\item{resolution}{'BUC','BSC','BGC' (optionally 'BFC','BFE' if enabled)}
 
-\item{nations}{Named logical vector for nation prefixes (E/N/S/W). Only those TRUE are kept.}
+\item{nations}{named logical vector for nation prefixes (E/N/S/W)}
 
-\item{quiet}{Logical; if FALSE, prints the fetch URL.}
+\item{quiet}{logical; if FALSE prints the fetch URL (URL printed only when quiet = FALSE)}
+
+\item{use_cache}{logical; if TRUE cache results on disk and reuse across sessions}
+
+\item{cache_max_age_days}{numeric; max age before re-downloading (Inf = never expire)}
 }
 \value{
-An sf object with 'code' and 'name' columns added.
+sf object
 }
 \description{
-Download ONS boundaries
+Download ONS boundaries (with caching)
 }
