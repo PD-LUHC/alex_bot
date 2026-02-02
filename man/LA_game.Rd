@@ -2,7 +2,7 @@
 % Please edit documentation in R/play.R
 \name{LA_game}
 \alias{LA_game}
-\title{Play an interactive terminal round (LA_game)}
+\title{Play an interactive terminal LA guessing game}
 \usage{
 LA_game(
   area_type = "lad",
@@ -18,6 +18,81 @@ LA_game(
   options_radius_km = 60
 )
 }
-\description{
-Play an interactive terminal round (LA_game)
+\arguments{
+\item{area_type}{Character scalar, one of
+\code{"lad"}, \code{"ctyua"}, \code{"msoa"}, \code{"pcon"}.
+These correspond to:
+\itemize{
+\item \code{"lad"} = Local Authority District
+\item \code{"ctyua"} = Counties and Unitary Authority
+\item \code{"msoa"} = Middle Layer Super Output Area
+\item \code{"pcon"} = Parliamentary Constituency
 }
+Default is \code{"lad"}.}
+
+\item{resolution}{Character scalar passed to \code{ons_get_boundaries()} to
+choose the boundary generalisation. Defaults to \code{"BGC"}.}
+
+\item{nations}{Named logical vector of length 4 defining which nations to
+include when downloading boundaries; names must be \code{c("E","N","S","W")}.
+The default is \code{c(E = TRUE, N = FALSE, S = FALSE, W = FALSE)}.}
+
+\item{random_seed}{Integer or \code{NULL}. If supplied, sets the RNG seed
+at the start of the round to ensure reproducibility of the selected area
+and the generated options. If \code{NULL} (default), each run is random.}
+
+\item{hint_mode}{Character scalar; how to generate hint distances. One of:
+\code{"proportional"} (default) or \code{"fixed_km"}.
+\itemize{
+\item \code{"proportional"}: distances are computed as
+\code{buffer_scales * unit_km}, where \code{unit_km} depends on
+\code{buffer_basis} (see below) and is floored at \code{min_buffer_km}.
+\item \code{"fixed_km"}: distances are taken directly from
+\code{buffers_km}.
+}}
+
+\item{buffers_km}{Numeric vector of hint distances in kilometres used only
+when \code{hint_mode == "fixed_km"}. Default: \code{c(15, 30, 60)}.}
+
+\item{buffer_scales}{Numeric vector of multipliers used only when
+\code{hint_mode == "proportional"}. Default: \code{c(1, 2.5, 5)}.}
+
+\item{buffer_basis}{Character scalar defining the basis for proportional
+hints; one of \code{"maxdim"}, \code{"diag"}, \code{"area_radius"}.
+This is passed to \code{.la_size_unit_km()} to compute \code{unit_km}.}
+
+\item{min_buffer_km}{Numeric scalar. Minimum hint distance (km) applied
+when using proportional hints so that very small areas still get a
+sensible first hint. Default: \code{5}.}
+
+\item{n_options}{Integer scalar. Total number of answer options to show
+when the user types \code{"options"}. One is correct; the rest are
+distractors. Default: \code{4}.}
+
+\item{options_radius_km}{Numeric scalar. Maximum distance (km) from the
+target within which distractor options are sampled. Default: \code{60}.}
+}
+\description{
+Launch an interactive terminal game that asks the user to guess a UK
+geography (e.g., Local Authority District, MSOA) selected at random.
+The game downloads ONS boundaries for the chosen \code{area_type}, shows an
+initial map, and then responds to user commands (\code{hint}, \code{options},
+\code{reveal}, \code{quit}) until the round ends.
+}
+\details{
+
+}
+\section{How it works}{
+
+\itemize{
+\item Downloads boundaries via \code{ons_get_boundaries()} for the given
+\code{area_type}, \code{resolution}, and \code{nations}.
+\item Randomly selects a target and opens a plot of the selected area.
+\item Provides progressive \strong{hints} either at fixed distances
+(\code{hint_mode = "fixed_km"}) or distances \emph{proportional}
+to the size of the area (\code{hint_mode = "proportional"}), where
+proportional distances are computed from \code{buffer_basis}.
+\item Offers multiple-choice \strong{options} drawn from nearby areas.
+}
+}
+
