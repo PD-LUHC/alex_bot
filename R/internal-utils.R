@@ -10,7 +10,7 @@ Please install them using install.packages()."
     }
 }
 
-.ons_catalogue <- function(area_type = c("lad", "ctyua", "msoa"),
+.ons_catalogue <- function(area_type = c("lad", "ctyua", "msoa", "pcon"),
                            resolution = c("BUC", "BSC", "BGC")) {
     area_type <- match.arg(area_type)
     resolution <- match.arg(resolution)
