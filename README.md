@@ -8,6 +8,11 @@ It's a playful way to engage with ONS mapping information if you are an R user.
 The code is really rough - what do you expect from something that was vibe-coded in half an hour?
 The code seems to work but is a bit buggy and issue prone - what do you expect from something that was vibe-coded in half an hour(raise an issue ticket if you care that much)?
 
+### Known VS Code httpgd fudge
+As VS Code users need httpgd for plot displays there is an additional layer that adds some fudge to the experience.
+`LA_game()` won't necessarily display plots if httpgd hasn't been launched already.
+Until a workable fix is figured out, VS Code users should just do a dummy run of `LA_game()`, httpgd will launch after *"reveal"* or *"quit"* have been entered.
+
 ## Install from GitHub
 
 ```r
@@ -19,7 +24,7 @@ You might need to `install.packages("remotes")` if "remotes" is not installed
 
 ### Fast game:
 ```r
-AlexBot::LA_game()
+AlexBot::LA_game() # defaults to LADs
 ```
 
 ### More manual game:
@@ -28,7 +33,7 @@ library(AlexBot)
 
 # Download England LADs (low-res)
 lad <- ons_get_boundaries(
-    area_type = "lad",
+    area_type = "lad", # other district types available
     resolution = "BGC",
     nations = c(E=TRUE, N=FALSE, S=FALSE, W=FALSE)
 )
