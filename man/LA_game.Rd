@@ -6,6 +6,7 @@
 \usage{
 LA_game(
   area_type = "lad",
+  chatty = FALSE,
   resolution = "BGC",
   nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
   random_seed = NULL,
