@@ -186,3 +186,118 @@ alexbot_cache_info <- function() {
         stringsAsFactors = FALSE
     )
 }
+
+# ---- Typing effect: prints text character-by-character with optional blinking cursor ----
+# ---- ANSI helpers ----
+ansi <- list(
+    green = function(x) paste0("\033[32m", x, "\033[0m"),
+    bold = function(x) paste0("\033[1m", x, "\033[0m"),
+    invert = function(x) paste0("\033[7m", x, "\033[0m"),
+    hide_cursor = "\033[?25l",
+    show_cursor = "\033[?25h",
+    clear_line = "\033[2K",
+    carriage = "\r"
+)
+
+.flush <- function() {
+    try(flush.console(), silent = TRUE)
+}
+
+# ---- typewrite with only "none" or "after" for ellipsis ----
+# Arguments:
+# - text: text to type
+# - delay: per-character delay (seconds)
+# - cursor: show a blinking block cursor during typing
+# - cursor_char: the fake cursor character (full block default)
+# - blink_every: blink cycle for the fake cursor (seconds)
+# - ellipsis: one of c("none", "after")
+# - ellipsis_ticks: how many steps the ellipsis should animate after typing
+# - ellipsis_step: delay between ellipsis frames
+# - ellipsis_max: max number of dots before reset (typically 3)
+typewrite <- function(
+    text,
+    chatty = TRUE,
+    delay = 0.02,
+    cursor = TRUE, # doesn't work as expected if false
+    cursor_char = "\u2588",
+    blink_every = 0.12,
+    ellipsis = TRUE,
+    ellipsis_ticks = 8,
+    ellipsis_step = 0.2,
+    ellipsis_max = 3) {
+    cat(ansi$hide_cursor)
+    on.exit(cat(ansi$show_cursor), add = TRUE)
+
+    chars <- strsplit(text, "", fixed = TRUE)[[1]]
+    acc <- ""
+    last_blink <- Sys.time()
+
+    # chatty override
+    if (!chatty) {
+        delay = 0
+        ellipsis = FALSE
+    }
+
+    # Normal typing
+    for (i in seq_along(chars)) {
+        acc <- paste0(acc, chars[i])
+        if (cursor) {
+            now <- Sys.time()
+            show <- as.numeric(difftime(now, last_blink, units = "secs")) %% (2 * blink_every) < blink_every
+            display <- if (show) paste0(acc, cursor_char) else paste0(acc, " ")
+            cat(ansi$carriage, ansi$clear_line, display, sep = "")
+        } else {
+            cat(chars[i])
+        }
+        .flush()
+        Sys.sleep(delay)
+    }
+
+    # Stabilize the final line (remove fake cursor)
+    cat(ansi$carriage, ansi$clear_line, acc, sep = "")
+    .flush()
+
+    # Optional ellipsis AFTER typing
+    if (ellipsis) {
+        # Important: ellipsis() also hides/shows the cursor; that’s fine since
+        # we restored the line above and it will re-hide/re-show during its run.
+        ellipsis(base = acc, ticks = ellipsis_ticks, step = ellipsis_step)
+        # Ensure we leave the base text visible and then newline if you want:
+        # 
+    }
+    if (!ellipsis) {
+        cat("\n")
+    }
+}
+
+# ---- Ellipses animation: prints `base` then animated ... then returns to a clean line ----
+ellipsis <- function(base = "Thinking", ticks = 6, step = 0.3) {
+    cat(ansi$hide_cursor)
+    on.exit(cat(ansi$show_cursor), add = TRUE)
+
+    for (i in seq_len(ticks)) {
+        dots <- paste(rep(".", i %% 4), collapse = "")
+        line <- sprintf("%s%s", base, dots)
+        cat(ansi$carriage, ansi$clear_line, line, sep = "")
+        .flush()
+        Sys.sleep(step)
+    }
+    # Clear and end with the base phrase completed
+    cat(ansi$carriage, ansi$clear_line, base, "\n", sep = "")
+    .flush()
+}
+
+# ---- Temporary flashing cursor at line end (decorative) ----
+flash_cursor <- function(times = 6, cursor_char = "\u2588", on = 0.25, off = 0.25) {
+    cat(ansi$hide_cursor)
+    on.exit(cat(ansi$show_cursor), add = TRUE)
+
+    for (i in seq_len(times)) {
+        cat(cursor_char)
+        .flush()
+        Sys.sleep(on)
+        cat(ansi$carriage, ansi$clear_line, sep = "")
+        .flush()
+        Sys.sleep(off)
+    }
+}
