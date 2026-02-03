@@ -27,7 +27,7 @@ ons_get_boundaries <- function(area_type = c("lad", "ctyua", "msoa", "pcon"),
         cached <- .cache_load(key, max_age_days = cache_max_age_days)
         if (!is.null(cached)) {
             # Always show the short message; URL only when quiet = FALSE
-            message("Fetching ONS boundaries from:")
+            message("Fetching cached ONS boundaries")
             if (!quiet) message(catl$url)
             return(cached)
         }

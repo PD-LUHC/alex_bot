@@ -83,6 +83,7 @@
 #' @export
 LA_game <- function(
     area_type = "lad",
+    chatty = FALSE,
     resolution = "BGC",
     nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
     random_seed = NULL,                     # NULL = random each run; set a number for reproducibility
@@ -102,19 +103,7 @@ LA_game <- function(
     if (!is.null(random_seed)) set.seed(random_seed)
 
 
-    area_terms <- c(
-        lad   = "Local Authority District",
-        ctyua = "Counties and Unitary Authority",
-        msoa  = "Middle Layer Super Output Area",
-        pcon  = "Parliamentary Constituency"
-    )
-
-    message(paste0(
-    "\033[32mHello from AlexBot v", packageVersion("AlexBot"), "\033[0m"
-    ))
-    message(paste0(
-    "\033[32mLet's play guess the ", unname(area_terms[area_type]), "\033[0m"
-    ))
+    .welcome_message(area_type, chatty)
 
     # Download boundaries and pick a target at random (no seed => truly random by default)
     bnd <- ons_get_boundaries(
@@ -136,17 +125,22 @@ LA_game <- function(
 
     correct <- selected_name(sel)
 
-    message("\n--- GUESS THE REGION ---")
-    message("Type your guess, 'hint', 'options', 'reveal', or 'quit'.")
-    message(
-        if (hint_mode == "proportional") {
-            paste0(
-                "Hints (proportional, basis = ", buffer_basis, "): ",
-                paste(round(computed_buffers), collapse = " → "), " km"
-            )
-        } else {
-            paste0("Hints (fixed): ", paste(computed_buffers, collapse = " → "), " km")
-        }
+    typewrite(
+        ansi$green(paste("Type your guess, 'hint', 'options', 'reveal', or 'quit'.")),
+        chatty = FALSE, ellipsis = FALSE
+    )
+    typewrite(
+        ansi$green(paste(
+            if (hint_mode == "proportional") {
+                paste0(
+                    "Hints (proportional, basis = ", buffer_basis, "): ",
+                    paste(round(computed_buffers), collapse = " \U2192 "), " km"
+                )
+            } else {
+                paste0("Hints (fixed): ", paste(computed_buffers, collapse = " \U2192 "), " km")
+            }
+        )),
+        chatty = chatty
     )
 
     # Always ensure a device exists and is active, then plot immediately
@@ -155,16 +149,20 @@ LA_game <- function(
 
     hint_i <- 0L
     repeat {
-        ans <- readline("\nYour input: ")
+        ans <- readline("Your input: ")
         low <- tolower(trimws(ans))
 
         if (low %in% c("quit", "exit")) {
-            message("You quit. The answer was: ", correct)
+            typewrite(ansi$green(paste("You quit. The answer was:", correct)), chatty = chatty)
             break
         }
 
         if (low == "reveal") {
-            message("Reveal: ", correct)
+            if (chatty) {
+                typewrite(ansi$green("Oh dear!"), chatty = chatty)
+                typewrite(ansi$green("Maybe you'll get it next time"), chatty = chatty)
+            }
+            typewrite(ansi$green(paste("The correct answer is:", correct)), chatty = chatty)
             .ensure_plot_device()
             print(plot_selected(sel, show_title = TRUE, title_position = "top", title_size = 22))
             break
@@ -172,11 +170,23 @@ LA_game <- function(
 
         if (low == "hint") {
             hint_i <- hint_i + 1L
+            if (hint_i == 2) {
+                .oh_gosh_cat(chatty)
+            }
+            if (hint_i == 3) {
+                .history_is_great(chatty)
+            }
             if (hint_i > length(computed_buffers)) {
-                message("No more hints. Try 'reveal' or make a guess.")
+                typewrite(
+                    ansi$green("No more hints. Try 'reveal', see 'options', or make a guess."),
+                    chatty = chatty
+                )
             } else {
                 d <- computed_buffers[hint_i]
-                message("Showing surroundings at ", round(d, 1), " km.")
+                typewrite(
+                    ansi$green(paste("Showing surroundings at", round(d, 1), "km")),
+                    chatty = chatty
+                )
                 .ensure_plot_device()
                 print(plot_with_surroundings(
                     sel,
@@ -195,7 +205,7 @@ LA_game <- function(
                 max_distance_km = options_radius_km,
                 seed = if (!is.null(random_seed)) random_seed else NULL
             )
-            cat("\nOptions:\n")
+            cat("Options:\n")
             for (i in seq_along(opts)) cat(sprintf("  %d) %s\n", i, opts[i]))
             next
         }
@@ -203,12 +213,15 @@ LA_game <- function(
         if (nchar(low) == 0) next
 
         if (low == tolower(correct)) {
-            message("✅ Correct! ", correct)
+            typewrite(ansi$green(paste("\U2705 Correct! ", correct)), chatty = chatty)
             .ensure_plot_device()
             print(plot_selected(sel, show_title = TRUE, title_position = "top", title_size = 22))
             break
         } else {
-            message("❌ Not correct. Try 'hint', 'options', or 'reveal'.")
+            typewrite(
+                ansi$green("\U274C Not correct. Try 'hint', 'options', or 'reveal'."),
+                chatty = chatty
+            )
         }
     }
 }
