@@ -56,8 +56,8 @@ guess_options <- function(selection,
     sel_bng <- .to_bng(sel)
     all_bng <- .to_bng(all)
 
-    sel_ctr <- sf::st_centroid(sel_bng)
-    all_ctr <- sf::st_centroid(all_bng)
+    sel_ctr <- suppressWarnings(sf::st_centroid(sel_bng))
+    all_ctr <- suppressWarnings(sf::st_centroid(all_bng))
 
     dists_m <- as.numeric(sf::st_distance(sel_ctr, all_ctr)[1, ])
     ord <- order(dists_m)
