@@ -26,6 +26,14 @@ You might need to `install.packages("remotes")` if "remotes" is not installed
 ```r
 AlexBot::LA_game() # defaults to LADs
 ```
+or if you prefer parliamentary constituencies:
+```r
+AlexBot::LA_game("pcon")
+```
+additionally, if you like things chattier:
+```r
+AlexBot::LA_game(area_type = "pcon", chatty = TRUE)
+```
 
 ### More manual game:
 ```r
