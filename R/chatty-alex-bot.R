@@ -18,17 +18,17 @@
 
     # Greeting with typing + a momentary blinking cursor
     typewrite(
-        ansi$green(paste0("Hello, I'm ", bot_name, " v", bot_version))
+        paste0("Hello, I'm ", bot_name, " v", bot_version)
     )
     Sys.sleep(0.2)
 
-    typewrite(ansi$green(paste("I like maps")))
-    typewrite(ansi$green(paste("Do you like maps?")))
+    typewrite(paste("I like maps"))
+    typewrite(paste("Do you like maps?"))
     Sys.sleep(0.2)
 
     # Prompt with a typewriter effect
     prompt <- paste0("Let's play guess the ", unname(area_terms[area_type]))
-    typewrite(ansi$green(prompt), delay = 0.02, cursor = TRUE, ellipsis = TRUE)
+    typewrite(prompt, delay = 0.02, cursor = TRUE, ellipsis = TRUE)
 
     # Decorative flashing cursor at the end (optional)
     flash_cursor(times = 4, on = 0.2, off = 0.2)
@@ -40,17 +40,18 @@
 
 .oh_gosh_cat <- function(chatty = FALSE) {
     if (chatty == TRUE) {
-        typewrite(ansi$green(paste(.cat_strike())))
+        typewrite(paste(.cat_strike()))
         meow_cat()
-        typewrite(ansi$green(paste("Oh Gosh!", .cat_strike())))
-        typewrite(ansi$green(paste("my Cat has jumped onto my keyboard!")))
-        typewrite(ansi$green(paste(.cat_strike())))
+        Sys.sleep(1)
+        typewrite(paste("Oh Gosh!", .cat_strike()))
+        typewrite(paste("my Cat has jumped onto my keyboard!"))
+        typewrite(paste(.cat_strike()))
     }
 }
 
 .history_is_great <- function(chatty = FALSE) {
     if (chatty == TRUE) {
-        typewrite(ansi$green("History is great"))
-        typewrite(ansi$green("I like History"))
+        typewrite("History is great")
+        typewrite("I like History")
     }
 }

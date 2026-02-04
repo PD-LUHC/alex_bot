@@ -27,7 +27,7 @@ ons_get_boundaries <- function(area_type = c("lad", "ctyua", "msoa", "pcon"),
         cached <- .cache_load(key, max_age_days = cache_max_age_days)
         if (!is.null(cached)) {
             # Always show the short message; URL only when quiet = FALSE
-            message("Fetching cached ONS boundaries")
+            message(paste("Fetching cached ONS", resolution, "boundaries"))
             if (!quiet) message(catl$url)
             return(cached)
         }
@@ -41,7 +41,7 @@ ons_get_boundaries <- function(area_type = c("lad", "ctyua", "msoa", "pcon"),
         "&f=geojson"
     )
 
-    message("Fetching ONS boundaries, may take a moment")
+    message(paste("Fetching ONS", resolution, "boundaries, may take a moment"))
     if (!quiet) {
         message(full_url)
     }

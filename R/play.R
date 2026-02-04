@@ -126,11 +126,11 @@ LA_game <- function(
     correct <- selected_name(sel)
 
     typewrite(
-        ansi$green(paste("Type your guess, 'hint', 'options', 'reveal', or 'quit'.")),
+        paste("Type your guess, 'hint', 'options', 'reveal', or 'quit'."),
         chatty = FALSE, ellipsis = FALSE
     )
     typewrite(
-        ansi$green(paste(
+        paste(
             if (hint_mode == "proportional") {
                 paste0(
                     "Hints (proportional, basis = ", buffer_basis, "): ",
@@ -139,7 +139,7 @@ LA_game <- function(
             } else {
                 paste0("Hints (fixed): ", paste(computed_buffers, collapse = " \U2192 "), " km")
             }
-        )),
+        ),
         chatty = chatty
     )
 
@@ -153,16 +153,16 @@ LA_game <- function(
         low <- tolower(trimws(ans))
 
         if (low %in% c("quit", "exit")) {
-            typewrite(ansi$green(paste("You quit. The answer was:", correct)), chatty = chatty)
+            typewrite(paste("You quit. The answer was:", correct), chatty = chatty)
             break
         }
 
         if (low == "reveal") {
             if (chatty) {
-                typewrite(ansi$green("Oh dear!"), chatty = chatty)
-                typewrite(ansi$green("Maybe you'll get it next time"), chatty = chatty)
+                typewrite("Oh dear!", chatty = chatty)
+                typewrite("Maybe you'll get it next time", chatty = chatty)
             }
-            typewrite(ansi$green(paste("The correct answer is:", correct)), chatty = chatty)
+            typewrite(paste("The correct answer is:", correct), chatty = chatty)
             .ensure_plot_device()
             print(plot_selected(sel, show_title = TRUE, title_position = "top", title_size = 22))
             break
@@ -178,13 +178,13 @@ LA_game <- function(
             }
             if (hint_i > length(computed_buffers)) {
                 typewrite(
-                    ansi$green("No more hints. Try 'reveal', see 'options', or make a guess."),
+                    "No more hints. Try 'reveal', see 'options', or make a guess.",
                     chatty = chatty
                 )
             } else {
                 d <- computed_buffers[hint_i]
                 typewrite(
-                    ansi$green(paste("Showing surroundings at", round(d, 1), "km")),
+                    paste("Showing surroundings at", round(d, 1), "km"),
                     chatty = chatty
                 )
                 .ensure_plot_device()
@@ -213,13 +213,13 @@ LA_game <- function(
         if (nchar(low) == 0) next
 
         if (low == tolower(correct)) {
-            typewrite(ansi$green(paste("\U2705 Correct! ", correct)), chatty = chatty)
+            typewrite(paste("\U2705 Correct! ", correct), chatty = chatty)
             .ensure_plot_device()
             print(plot_selected(sel, show_title = TRUE, title_position = "top", title_size = 22))
             break
         } else {
             typewrite(
-                ansi$green("\U274C Not correct. Try 'hint', 'options', or 'reveal'."),
+                "\U274C Not correct. Try 'hint', 'options', or 'reveal'.",
                 chatty = chatty
             )
         }

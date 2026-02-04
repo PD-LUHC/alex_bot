@@ -190,9 +190,6 @@ alexbot_cache_info <- function() {
 # ---- Typing effect: prints text character-by-character with optional blinking cursor ----
 # ---- ANSI helpers ----
 ansi <- list(
-    green = function(x) paste0("\033[32m", x, "\033[0m"),
-    bold = function(x) paste0("\033[1m", x, "\033[0m"),
-    invert = function(x) paste0("\033[7m", x, "\033[0m"),
     hide_cursor = "\033[?25l",
     show_cursor = "\033[?25h",
     clear_line = "\033[2K",
@@ -201,6 +198,14 @@ ansi <- list(
 
 .flush <- function() {
     try(flush.console(), silent = TRUE)
+}
+
+.colour_check <- function() {
+    term <- tolower(Sys.getenv("TERM", ""))
+    colorterm <- tolower(Sys.getenv("COLORTERM", ""))
+
+    startsWith(term, "xterm") ||
+        identical(colorterm, "truecolor")
 }
 
 # ---- typewrite with only "none" or "after" for ellipsis ----
@@ -234,10 +239,12 @@ typewrite <- function(
 
     # chatty override
     if (!chatty) {
-        delay = 0
-        ellipsis = FALSE
+        delay <- 0
+        ellipsis <- FALSE
     }
-
+    if (.colour_check()) {
+        cat("\033[32m")
+    }
     # Normal typing
     for (i in seq_along(chars)) {
         acc <- paste0(acc, chars[i])
@@ -263,10 +270,12 @@ typewrite <- function(
         # we restored the line above and it will re-hide/re-show during its run.
         ellipsis(base = acc, ticks = ellipsis_ticks, step = ellipsis_step)
         # Ensure we leave the base text visible and then newline if you want:
-        # 
     }
     if (!ellipsis) {
         cat("\n")
+    }
+    if (.colour_check()) {
+        cat("\033[0m")
     }
 }
 
