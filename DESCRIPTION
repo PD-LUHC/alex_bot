@@ -1,7 +1,7 @@
 Package: AlexBot
 Type: Package
 Title: ONS Boundary Guessing Game Tools
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: c(person(given = "pd-luhc", role = c("aut"), comment = c(GitHub = "https://github.com/pd-luhc")),
              person(given = "M365 Copilot", role = c("cre"), email = "noreply@microsoft.com"))
 Description: Helpers to download ONS boundary data (Local Authorities and more),
@@ -14,7 +14,9 @@ RoxygenNote: 7.3.3
 Depends: R (>= 4.1.0)
 Imports:
     sf (>= 1.0-0),
-    ggplot2 (>= 3.4.0)
+    ggplot2 (>= 3.4.0),
+    utils,
+    remotes
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

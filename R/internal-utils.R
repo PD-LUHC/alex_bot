@@ -187,6 +187,144 @@ alexbot_cache_info <- function() {
     )
 }
 
+# ---- package version check ----
+#' @keywords internal
+#' @noRd
+.check_latest_version_remotes <- function(
+    repo = getOption(
+        "alex_bot.github_repo",
+        getOption("Config/alex_bot/github_repo", "PD-LUHC/alex_bot")
+    ),
+    ref = getOption( # ref kept for future use
+        "alex_bot.github_ref",
+        getOption("Config/alex_bot/github_ref", "main")
+    ),
+    quiet = TRUE,
+    once_per_session = TRUE,
+    include_prerelease = FALSE) {
+    # Helper to emit a single failure message per session and exit cleanly
+
+    fail <- function(reason = NULL) {
+        # emit at most once per session
+        if (!isTRUE(getOption("alex_bot._update_failed", FALSE))) {
+            msg <- "Unable to check for updates (AlexBot)."
+            if (!quiet && nzchar(reason)) msg <- sprintf("%s Reason: %s", msg, reason)
+            message(msg) # runtime-appropriate
+            options(alex_bot._update_failed = TRUE)
+        }
+        invisible(NULL)
+    }
+
+    # Allow opt-out (useful in CI/tests/offline builds) — not a "failure"
+    if (identical(getOption("alex_bot.check_updates", TRUE), FALSE)) {
+        return(invisible(NULL))
+    }
+
+    # Avoid repeating the message within the same R session
+    if (isTRUE(once_per_session) && isTRUE(getOption("alex_bot._update_nudged", FALSE))) {
+        return(invisible(NULL))
+    }
+
+    # Require {remotes}; if missing we consider that a failure to check
+    if (!requireNamespace("remotes", quietly = TRUE)) {
+        return(fail("package 'remotes' not installed"))
+    }
+
+    pkg <- "AlexBot"
+    installed <- tryCatch(utils::packageVersion(pkg), error = function(e) NA)
+
+    # If the installed version couldn’t be determined, tell the user once and exit
+    if (is.na(installed)) {
+        return(fail("installed version unknown (could not determine utils::packageVersion)."))
+    }
+
+    # Cache the last attempt result (success value or NA) to avoid repeated work
+    latest <- getOption("alex_bot._cached_latest_tag", NULL)
+    if (is.null(latest)) {
+        # Need to attempt retrieval
+        if (!nzchar(Sys.which("git"))) {
+            return(fail("git not found on PATH"))
+        }
+
+        repo_url <- paste0("https://github.com/", repo, ".git")
+
+        # Try to list remote tags
+        tags_raw <- tryCatch(
+            {
+                out <- suppressWarnings(system2(
+                    "git",
+                    c("ls-remote", "--tags", repo_url),
+                    stdout = TRUE, stderr = TRUE
+                ))
+                if (!is.null(attr(out, "status")) && attr(out, "status") != 0) {
+                    return(NULL)
+                }
+                out
+            },
+            error = function(e) NULL
+        )
+
+        if (is.null(tags_raw)) {
+            options(alex_bot._cached_latest_tag = NA_character_)
+            return(fail("git ls-remote failed"))
+        }
+
+        # Extract tag names and filter to semver-like
+        tag_names <- sub("^.+\\trefs/tags/", "", tags_raw)
+        tag_names <- sub("\\^\\{\\}$", "", tag_names) # peel annotations
+        semver_pat <- "^v?\\d+\\.\\d+\\.\\d+(?:[-+].*)?$"
+        tag_names <- tag_names[grepl(semver_pat, tag_names, perl = TRUE)]
+
+        if (!isTRUE(include_prerelease)) {
+            tag_names <- tag_names[!grepl("^v?\\d+\\.\\d+\\.\\d+-", tag_names)]
+        }
+
+        if (!length(tag_names)) {
+            options(alex_bot._cached_latest_tag = NA_character_)
+            return(fail("no semver tags found"))
+        }
+
+        semvers <- sub("^v", "", tag_names)
+        pv <- tryCatch(
+            package_version(semvers),
+            error = function(e) rep(NA, length(semvers))
+        )
+        if (all(is.na(pv))) {
+            options(alex_bot._cached_latest_tag = NA_character_)
+            return(fail("could not parse tag versions"))
+        }
+
+        o <- order(pv, decreasing = TRUE, na.last = NA)
+        latest <- semvers[o][1]
+        options(alex_bot._cached_latest_tag = latest)
+    }
+
+    # If the remote latest couldn’t be determined, tell the user once and exit
+    if (is.na(latest)) {
+        # Cache the failure so we don’t keep retrying this session
+        options(alex_bot._cached_latest_tag = NA_character_)
+        return(fail("remote latest version unknown (unable to determine tags or parse versions)."))
+    }
+
+    # Compare installed vs latest and nudge
+    cmp <- tryCatch(
+        utils::compareVersion(as.character(installed), as.character(latest)),
+        error = function(e) NA_integer_
+    )
+    if (!is.na(cmp) && cmp < 0) {
+        msg <- sprintf(
+            paste0(
+                "A newer version of %s is available (%s -> %s).\n",
+                "To update (after game is over):\n  remotes::install_github('%s')"
+            ),
+            pkg, installed, latest, repo
+        )
+        if (isTRUE(quiet)) packageStartupMessage(msg) else message(msg)
+        options(alex_bot._update_nudged = TRUE)
+    }
+    invisible(NULL)
+}
+
 # ---- Typing effect: prints text character-by-character with optional blinking cursor ----
 # ---- ANSI helpers ----
 ansi <- list(

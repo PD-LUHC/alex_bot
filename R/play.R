@@ -95,6 +95,7 @@ LA_game <- function(
     n_options = 4,
     options_radius_km = 60
 ) {
+    if (interactive()) .check_latest_version_remotes()
     .require_pkgs(c("sf", "ggplot2"))
     hint_mode <- match.arg(hint_mode)
     buffer_basis <- match.arg(buffer_basis)

@@ -24,7 +24,7 @@ You might need to `install.packages("remotes")` if "remotes" is not installed
 
 ### Fast game:
 ```r
-AlexBot::LA_game() # defaults to LADs
+AlexBot::LA_game() # single command, default options
 ```
 or if you prefer parliamentary constituencies:
 ```r
@@ -58,6 +58,6 @@ plot_with_surroundings(sel, distance_km = 15)
 # Options (correct + nearby distractors)
 guess_options(sel, n_distractors = 3, max_distance_km = 50, seed = 1)
 
-# One-command terminal game with defaults
-LA_game()
+# Reveal the answer
+plot_selected(sel, show_title = TRUE, title_position = "top", title_size = 22)
 ```
