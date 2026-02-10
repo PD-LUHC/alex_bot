@@ -8,3 +8,7 @@ navbar:
   structure:
     left: [reference, articles]
     right: [search]
+articles:
+  - title: "Acknowledgements"
+    contents:
+      - articles/acknowled

@@ -1,7 +1,7 @@
 Package: AlexBot
 Type: Package
 Title: ONS Boundary Guessing Game Tools
-Version: 0.3.2
+Version: 0.3.3
 Authors@R: c(person(given = "pd-luhc", role = c("aut"), comment = c(GitHub = "https://github.com/pd-luhc")),
              person(given = "M365 Copilot", role = c("cre"), email = "noreply@microsoft.com"))
 Description: Helpers to download ONS boundary data (Local Authorities and more),
@@ -22,3 +22,6 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://pd-luhc.github.io/alex_bot
 BugReports: https://github.com/pd-luhc/alex_bot/issues
+Acknowledgements:
+    This package includes data adapted from the repository
+    <https://github.com/Michonvv/random-history-fact>, included with permission from the author.

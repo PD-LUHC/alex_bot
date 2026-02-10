@@ -49,9 +49,18 @@
     }
 }
 
+.get_history_fact <- function(x = NULL) {
+    if (is.null(x)) {
+        x <- sample(1:150, 1)
+    }
+    as.character(history_facts[x, 1])
+}
+
 .history_is_great <- function(chatty = FALSE) {
     if (chatty == TRUE) {
         typewrite("History is great")
         typewrite("I like History")
+        typewrite(text = .get_history_fact(), delay = 0.008, blink_every = 0.02)
+        typewrite("Anyway, back to map boundaries")
     }
 }
