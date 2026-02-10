@@ -36,6 +36,8 @@
 #'   include when downloading boundaries; names must be \code{c("E","N","S","W")}.
 #'   The default is \code{c(E = TRUE, N = FALSE, S = FALSE, W = FALSE)}.
 #'
+#' @param chatty mode logical, enables more chatty dialogue prompts. 
+#'
 #' @param random_seed Integer or \code{NULL}. If supplied, sets the RNG seed
 #'   at the start of the round to ensure reproducibility of the selected area
 #'   and the generated options. If \code{NULL} (default), each run is random.
@@ -83,9 +85,9 @@
 #' @export
 LA_game <- function(
     area_type = "lad",
-    chatty = FALSE,
     resolution = "BGC",
     nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
+    chatty = FALSE,
     random_seed = NULL,                     # NULL = random each run; set a number for reproducibility
     hint_mode = c("proportional", "fixed_km"),
     buffers_km = c(15, 30, 60),             # used when hint_mode == "fixed_km"
@@ -192,7 +194,7 @@ LA_game <- function(
                 print(plot_with_surroundings(
                     sel,
                     distance_km = d,
-                    hint_label = paste0("HINT ", hint_i, " – ", round(d, 1), " km")
+                    hint_label = paste0("HINT ", hint_i, " \U2013 ", round(d, 1), " km")
                 ))
             }
             next
