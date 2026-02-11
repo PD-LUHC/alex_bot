@@ -6,9 +6,9 @@
 \usage{
 LA_game(
   area_type = "lad",
-  chatty = FALSE,
   resolution = "BGC",
   nations = c(E = TRUE, N = FALSE, S = FALSE, W = FALSE),
+  chatty = FALSE,
   random_seed = NULL,
   hint_mode = c("proportional", "fixed_km"),
   buffers_km = c(15, 30, 60),
@@ -37,6 +37,8 @@ choose the boundary generalisation. Defaults to \code{"BGC"}.}
 \item{nations}{Named logical vector of length 4 defining which nations to
 include when downloading boundaries; names must be \code{c("E","N","S","W")}.
 The default is \code{c(E = TRUE, N = FALSE, S = FALSE, W = FALSE)}.}
+
+\item{chatty}{mode logical, enables more chatty dialogue prompts.}
 
 \item{random_seed}{Integer or \code{NULL}. If supplied, sets the RNG seed
 at the start of the round to ensure reproducibility of the selected area
